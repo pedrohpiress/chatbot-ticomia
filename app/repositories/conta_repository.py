@@ -1,15 +1,29 @@
-from config.database import SessionLocal
 from sqlalchemy import text
 
-def listar_contas():
+from app.core.database import engine
 
-    db = SessionLocal()
 
-    result = db.execute(text(\"\"\"
-        SELECT *
-        FROM conta
-    \"\"\")).fetchall()
+def listar_contas(limit=5):
 
-    db.close()
+    with engine.connect() as db:
 
-    return result
+        result = db.execute(text("""
+            SELECT
+                id,
+                nome,
+                saldo_atual
+            FROM contas_bancarias
+            ORDER BY saldo_atual DESC
+            LIMIT :limit
+        """), {"limit": limit})
+
+        contas = []
+
+        for row in result:
+            contas.append({
+                "id": row.id,
+                "nome": row.nome,
+                "saldo": float(row.saldo_atual or 0)
+            })
+
+        return contas

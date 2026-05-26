@@ -1,16 +1,25 @@
-from config.database import SessionLocal
+from app.core.database import SessionLocal
 from sqlalchemy import text
 
-def listar_fluxos():
+def listar_fluxos(limit=10):
 
     db = SessionLocal()
 
-    result = db.execute(text(\"\"\"
-        SELECT *
-        FROM fluxo_caixa
+    result = db.execute(text("""
+        SELECT
+            id,
+            data_lancamento AS data,
+            data_efetivacao,
+            descricao,
+            status,
+            tipo,
+            valor,
+            conta_id,
+            evento_id
+        FROM lancamentos
         ORDER BY id DESC
-        LIMIT 200
-    \"\"\")).fetchall()
+        LIMIT :limit
+    """), {"limit": limit}).fetchall()
 
     db.close()
 

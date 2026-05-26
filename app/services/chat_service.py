@@ -1,16 +1,28 @@
-from services.context_service import montar_prompt
-from services.llama_service import perguntar_llama
-from services.memory_service import salvar_memoria
+import gc
+
+from app.services.context_service import gerar_contexto_minimo
+from app.services.llma_service import perguntar_llama
 
 def responder_chat(pergunta):
 
-    prompt = montar_prompt(pergunta)
+    contexto = ""
+    prompt = ""
 
-    resposta = perguntar_llama(prompt)
+    try:
+        contexto = gerar_contexto_minimo(pergunta)
 
-    salvar_memoria(
-        pergunta=pergunta,
-        resposta=resposta
-    )
+        prompt = f"""
+Voce e um assistente financeiro especializado.
 
-    return resposta
+CONTEXTO:
+{contexto}
+
+PERGUNTA:
+{pergunta}
+""".strip()
+
+        return perguntar_llama(prompt)
+    finally:
+        del contexto
+        del prompt
+        gc.collect()

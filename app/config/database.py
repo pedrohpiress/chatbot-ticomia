@@ -1,14 +1,1 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-DATABASE_URL = (
-    "mysql+mysqlconnector://root:123456@localhost/ticomia_financeiro"
-)
-
-engine = create_engine(DATABASE_URL)
-
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)   
+from app.core.database import DATABASE_URL, SessionLocal, engine, get_engine
